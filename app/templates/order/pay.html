@@ -1,0 +1,9 @@
+{% extends 'common/base.html' %}
+
+{% block title %}支付订单：{{ order.id }}{% endblock %}
+
+{% block content %}
+    {# TODO 支付界面 #}
+    <h1>总价：{{ order.price }}</h1>
+    <a href="{{ url_for('.change_status', order_id=order.id, status=config.ORDER_PAY) }}" class="btn btn-danger">确定付款</a>
+{% endblock %}

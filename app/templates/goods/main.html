@@ -1,0 +1,37 @@
+{% extends 'common/base.html' %}
+{% import 'macro/goods.html' as mg %}
+{% import 'macro/pagination.html' as mp %}
+
+{% block title %}卖家中心{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="btn-group m-auto" role="group" aria-label="Basic example">
+            <a type="button" class="btn btn-secondary" href="{{ url_for('order.main', seller=1) }}">所有订单</a>
+            <a type="button" class="btn btn-secondary"
+               href="{{ url_for('order.main', status=config.ORDER_NO_SEND, seller=1) }}">待发货</a>
+            <a type="button" class="btn btn-secondary"
+               href="{{ url_for('order.main', status=config.ORDER_NO_COMMENT, seller=1) }}">待评价</a>
+        </div>
+        <a type="button" class="btn btn-success btn-lg btn-block" href="{{ url_for('.modify', goods_id=0) }}">
+            发布商品
+        </a>
+        <div class="m-auto">
+            {% if pagination.items %}
+                {{ mg.show_goods_info(goods_count, '.main') }}
+                <hr>
+                {{ mg.show_goods_sort() }}
+                <hr>
+                {{ mg.show_goods_table(pagination.items, current_user) }}
+                {{ mp.show_pagination(pagination,'.main', **(request.args.to_dict() | pop_keys('page'))) }}
+            {% else %}
+                <h1>无</h1>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/goods/main.js') }}"></script>
+{% endblock %}

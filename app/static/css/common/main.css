@@ -1,0 +1,11 @@
+label[required]:before {
+    margin-right: 4px;
+    content: '*';
+    color: #ff3000;
+}
+
+.my_over_hidden {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

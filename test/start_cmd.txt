@@ -1,0 +1,19 @@
+SET SECRET_KEY=b'{\xe1n-\n0U\x9d\x16\xeb\x99O\x9e[{\xa0\xf6\xc2\x98\xc8\xb5\x11\x00\xc5'
+SET MYSQL_CONFIG={'user': 'root', 'password': 'root', 'host': 'localhost', 'port': 3306, 'database': 'graduation_thesis'}
+SET SESSION_TYPE=redis
+SET REDIS_CONFIG={'host': 'localhost', 'port': 6379}
+SET WHOOSH_BASE=D:\WorkSpace\Python\GraduationThesis\whoosh
+SET LOG_FILE=log/log.log
+SET MAIL_USE_SSL=False
+SET MAIL_SERVER=smtp.163.com
+SET MAIL_USERNAME=a874591940@163.com
+SET MAIL_PASSWORD=RQWVRNHSMRYFFZHR
+SET UPLOAD_FOLDER=D:\WorkSpace\Python\GraduationThesis\app\static\upload
+SET FLASK_ADMIN=874591940@qq.com
+python manage.py runserver
+
+
+python manage.py db init
+python manage.py db migrate
+python manage.py db upgrade
+python manage.py runserver

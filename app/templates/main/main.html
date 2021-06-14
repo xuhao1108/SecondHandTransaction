@@ -1,0 +1,27 @@
+{% extends 'common/base.html' %}
+{% import 'macro/goods.html' as mg %}
+{% import 'macro/catagory.html' as mc %}
+{% import 'macro/pagination.html' as mp %}
+
+{% block title %}我是主页{% endblock %}
+
+{% block container_attribs %}
+    class="container"
+{% endblock %}
+
+{% block content %}
+    <img src="{{ url_for('static',filename='img/logo.jpg') }}" alt="LOGO" style="width: 120px; height: 60px;">
+    <br>
+    {{ mc.show_catagory_ul(catagory) }}
+    <hr>
+    {{ mg.show_goods_sort() }}
+    <hr>
+    {{ mg.show_goods_table(pagination.items, None, show_edit=0) }}
+    {{ mp.show_pagination(pagination,'.main', **(request.args.to_dict() | pop_keys('page'))) }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/main/main.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/goods/main.js') }}"></script>
+{% endblock %}

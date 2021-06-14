@@ -1,0 +1,49 @@
+{% extends 'common/base.html' %}
+{% import 'macro/goods.html' as mg %}
+{% import 'macro/pagination.html' as mp %}
+
+{% block title %}{{ user.name or user.email }}的个人空间{% endblock %}
+
+{% block container_attribs %}
+    class="container"
+{% endblock %}
+
+{% block content %}
+    <div class="media">
+        <img class="mr-3" src="{{ url_for('static',filename=user.portrait) }}" alt="{{ user.name or user.email }}">
+        <div class="media-body">
+            <h5 class="mt-0">
+                {{ user.name or user.email }}
+                {% if user.sex == '男' %}<span style="color:red;">♂</span>
+                {% elif user.sex == '女' %}<span style="color:red;">♀</span>
+                {% endif %}
+            </h5>
+            <p>{{ user.email }}</p>
+            <p>{{ '年龄：{}岁'.format(user.age) if user.age }}</p>
+            <p>{{ '简介：{}'.format(user.info) if user.info }}</p>
+        </div>
+    </div>
+    <h3>{{ user.email }}<br>
+        出售中的商品</h3>
+    <hr>
+    <div class="row">
+        <div class="m-auto">
+            {% if pagination.items %}
+                {{ mg.show_goods_info(goods_count, '.item', 0, email=user.email) }}
+                <hr>
+                {{ mg.show_goods_sort() }}
+                <hr>
+                {{ mg.show_goods_table(pagination.items, None, show_edit=0) }}
+                {{ mp.show_pagination(pagination, '.item', email=user.email) }}
+            {% else %}
+                <h1>无</h1>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/goods/main.js') }}"></script>
+{% endblock %}

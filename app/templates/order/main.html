@@ -1,0 +1,77 @@
+{% extends 'common/base.html' %}
+{% import 'macro/pagination.html' as mp %}
+
+{% block title %}我的订单{% endblock %}
+
+{% block content %}
+    <div class="btn-group" role="group" aria-label="Basic example">
+        {% if request.args.get('seller') %}
+            <a type="button" class="btn btn-secondary" href="{{ url_for('.main', seller=1) }}">所有订单</a>
+            <a type="button" class="btn btn-secondary"
+               href="{{ url_for('.main', status=config.ORDER_NO_SEND, seller=1) }}">待发货</a>
+            <a type="button" class="btn btn-secondary"
+               href="{{ url_for('.main', status=config.ORDER_NO_COMMENT, seller=1) }}">待评价</a>
+        {% else %}
+            <a type="button" class="btn btn-secondary" href="{{ url_for('.main') }}">所有订单</a>
+            <a type="button" class="btn btn-secondary" href="{{ url_for('.main', status=config.ORDER_NO_PAY) }}">
+                待付款
+            </a>
+            <a type="button" class="btn btn-secondary" href="{{ url_for('.main', status=config.ORDER_NO_SEND) }}">
+                待发货
+            </a>
+            <a type="button" class="btn btn-secondary" href="{{ url_for('.main', status=config.ORDER_SEND) }}">
+                待收货
+            </a>
+            <a type="button" class="btn btn-secondary" href="{{ url_for('.main', status=config.ORDER_NO_COMMENT) }}">
+                待评价
+            </a>
+        {% endif %}
+    </div>
+    {% for order in pagination.items %}
+        <h1>{{ item }}</h1>
+        <div class="media border" style="margin-bottom:10px" id="order_div"
+             onclick="window.open('{{ url_for('.item', order_id=order.id) }}')">
+            <img src="{{ url_for('static', filename=(order.goods.pictures | loads_pictures_info)[0]) }}" class="mr-3" alt="1"
+            style="width: 100px; height: 100px;">
+            <div class="media-body">
+                <h5 class="mt-0">订单号：{{ order.id }}</h5>
+                <p>
+                    下单时间：{{ moment(order.booking_time).fromNow() }}（{{ moment(order.booking_time).format('LLL') }}）
+                    <span style="color:blueviolet">订单状态：{{ order.get_status() }}</span>
+                </p>
+            </div>
+            {# 买家操作 #}
+            {% if order.buyer_id == current_user.id %}
+                {% if order.status == config.ORDER_NO_PAY %}
+                    <a class="btn btn-primary" href="{{ url_for('.pay', order_id=order.id) }}">付款</a>
+                {% elif order.status == config.ORDER_NO_SEND %}
+                    {# TODO 提醒发货 #}
+                    <a class="btn btn-info" href="#">提醒发货</a>
+                {% elif order.status == config.ORDER_SEND %}
+                    <a class="btn btn-warning"
+                       href="{{ url_for('.change_status', status=config.ORDER_RECEIVE, order_id=order.id, next=request.url) }}">
+                        确认收货
+                    </a>
+                    {# 必须已收到货才能评价 #}
+                {% elif not order.buyer_message_id and order.status >= config.ORDER_RECEIVE %}
+                    <a class="btn btn-success" href="{{ url_for('.comment', order_id=order.id) }}">评价</a>
+                {% endif %}
+            {# 卖家操作 #}
+            {% elif order.seller_id == current_user.id %}
+                {% if order.status == config.ORDER_NO_SEND %}
+                    <a class="btn btn-info" href="{{ url_for('.send', order_id=order.id) }}">发货</a>
+                    {# 必须已收到货才能评价 #}
+                {% elif not order.seller_message_id and order.status >= config.ORDER_RECEIVE %}
+                    <a class="btn btn-success" href="{{ url_for('.comment', order_id=order.id) }}">评价</a>
+                {% endif %}
+            {% endif %}
+            {#            <a class="btn btn-danger" href="{{ url_for('.comment', order_id=order.id, next=request.url) }}">删除</a>#}
+        </div>
+    {% endfor %}
+    {{ mp.show_pagination(pagination, '.main', **(request.args.to_dict() | pop_keys('page'))) }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/order/main.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'common/base.html' %}
+
+{% block title %}个人空间{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" style="color:darkgray;" href="{{ url_for('.profile') }}">个人资料</a>
+            </li>
+            {#            <li class="nav-item">#}
+            {#                <a class="nav-link" href="{{ url_for('address.address') }}">收货地址</a>#}
+            {#            </li>#}
+            <li class="nav-item">
+                <a class="nav-link" href="#"
+                   onclick="reset_password('{{ url_for('.send_verification_code') }}', '{{ current_user.email }}','{{ csrf_token() }}')">修改密码</a>
+            </li>
+        </ul>
+        <form class="m-auto" method="post" action="{{ url_for('.profile') }}" onsubmit="return confirm('是否确认提交修改?')"
+              enctype="multipart/form-data">
+            {{ form.csrf_token }}
+            <img src="{{ url_for('static',filename=current_user.portrait) }}"
+                 alt="{{ current_user.name or current_user.email }}"
+                 id="portrait_img" style="width: 100px; height: 100px;">
+            <div class="form-group row">
+                {{ form.portrait.label(class_='col-sm-3 col-form-label') }}
+                <div class="col-sm-9">
+                    {{ form.portrait(class_="form-control-plaintext", accept='image/*', onchange='show_portrait(this)') }}
+                </div>
+            </div>
+            <div class="form-group row">
+                {{ form.email.label(class_='col-sm-3 col-form-label') }}
+                <div class="col-sm-9">
+                    {{ form.email(class_="form-control-plaintext border", disabled='true') }}
+                </div>
+            </div>
+            <div class="form-group row">
+                {{ form.name.label(class_='col-sm-3 col-form-label') }}
+                <div class="col-sm-9">
+                    {{ form.name(class_="form-control-plaintext border") }}
+                </div>
+            </div>
+            <div class="form-group row">
+                {{ form.age.label(class_='col-sm-3 col-form-label') }}
+                <div class="col-sm-9">
+                    {{ form.age(class_="form-control-plaintext border") }}
+                </div>
+            </div>
+            <div class="form-group row">
+                {{ form.sex.label(class_='col-sm-3 col-form-label') }}
+                <div class="col-sm-9">
+                    {{ form.sex(class_="form-control-plaintext border") }}
+                </div>
+            </div>
+            <div class="form-group row">
+                {{ form.info.label(class_='col-sm-3 col-form-label') }}
+                <div class="col-sm-9">
+                    {{ form.info(class_="form-control-plaintext border") }}
+                </div>
+            </div>
+            {{ form.submit(class_="btn btn-primary") }}
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/user/main.js') }}"></script>
+{% endblock %}

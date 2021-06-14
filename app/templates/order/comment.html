@@ -1,0 +1,32 @@
+{% extends 'common/base.html' %}
+
+{% block title %}订单评论：{{ order.id }}{% endblock %}
+
+{% block content %}
+    <form class="m-auto w-50" method="post" action="{{ url_for('.comment', order_id=order.id) }}"
+          enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div class="form-group row">
+            {{ form.comment.label(class_='col-sm-3 col-form-label', required=true) }}
+            <div class="col-sm-9">
+                {{ form.comment(class_="form-control-plaintext border") }}
+            </div>
+        </div>
+        {# 图片预览 #}
+        <ul class="list-group list-group-horizontal" id="show_pictures"></ul>
+        <div class="form-group row">
+            {{ form.pictures.label(class_='col-sm-3 col-form-label') }}
+            <div class="col-sm-9">
+                {{ form.pictures(class_="form-control-plaintext border", accept='image/*', multiple="multiple", onchange="check_file_count(this, min=0)") }}
+            </div>
+        </div>
+        {{ form.submit(class_="btn btn-primary") }}
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {# 引用上传文件相关函数 #}
+    <script src="{{ url_for('static',filename='js/user/main.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/goods/main.js') }}"></script>
+{% endblock %}

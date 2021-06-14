@@ -1,0 +1,41 @@
+{% macro show_pagination(pagination, endpoint) %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+                {# 可点击 #}
+                <li class="page-item active">
+                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.page - 1, **kwargs) }}">上一页</a>
+                </li>
+            {% else %}
+                {# 不可点击 #}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">上一页</a>
+                </li>
+            {% endif %}
+            {# left_edge=2,left_current=2,right_current=5,right_edge=2 #}
+            {# 例：共100页，当前第50页，则页码为 [1,2,None,48,49,50,51,52,53,54,55,None,99,100] #}
+            {% for page in pagination.iter_pages(1, 1, 3, 1) %}
+                {% if page %}
+                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for(endpoint, page=page, **kwargs) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">&hellip;</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+                {# 可点击 #}
+                <li class="page-item active">
+                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.page + 1, **kwargs) }}">下一页</a>
+                </li>
+            {% else %}
+                {# 不可点击 #}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">下一页</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endmacro %}

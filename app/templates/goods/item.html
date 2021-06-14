@@ -1,0 +1,49 @@
+{% extends 'common/base.html' %}
+{% import 'macro/goods.html' as mg %}
+{% import 'macro/catagory.html' as mc %}
+
+{% block title %}{{ goods.title }}{% endblock %}
+
+{% block content %}
+    {{ mc.show_catagory_bar(catagory, goods) }}
+    <hr>
+    <div class="row">
+        {{ mg.show_carousel_img(goods) }}
+        <div style="text-align: left; margin-left: 50px;" class="w-50">
+            <h1 class="my_over_hidden">{{ goods.title if goods.title }}</h1>
+            <h2 style="color:red;">
+                ￥： {{ goods.sec_price }}
+                <s style="color: black;">{{ goods.price }}</s>
+            </h2>
+            <h3 style="color:red">{{ goods.send_type }}{{ ['￥', goods.send_price] | join if goods.send_price }}</h3>
+            <h4 style="color:darkblue">
+                成色：
+                {% if goods.condition == 100 %}
+                    全新
+                {% elif goods.condition % 10 == 0 %}
+                    {{ goods.condition // 10 }} 成新
+                {% else %}
+                    {{ goods.condition }}%
+                {% endif %}
+            </h4>
+            <a type="button" class="btn btn-danger" href="{{ url_for('.buy', goods_id=goods.id) }}">立即购买</a>
+            {# TODO 收藏 #}
+            <a type="button" class="btn btn-warning" href="#">收藏</a>
+            <a type="button" class="btn btn-success" href="{{ url_for('user.item', email=goods.user.email) }}">查看更多商品</a>
+        </div>
+    </div>
+    <hr>
+    <div class="m-auto">
+        <p>{{ goods.info }}</p>
+        {% for picture_path in goods.pictures | loads_pictures_info %}
+            <hr style=" height:2px;border:none;border-top:1px dotted red;"/>
+            <img src="{{ url_for('static', filename=picture_path) }}" alt="{{ goods.id }}"
+                 onload="if(this.width >= 720){this.width = 720}">
+        {% endfor %}
+        <div style="text-align: right;">
+            修改于：{{ moment(goods.last_modify_time).fromNow() }}（{{ moment(goods.last_modify_time).format('LLL') }}）
+            <br>
+            发布于：{{ moment(goods.published_time).fromNow() }}（{{ moment(goods.published_time).format('LLL') }}）
+        </div>
+    </div>
+{% endblock %}

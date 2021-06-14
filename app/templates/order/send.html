@@ -1,0 +1,23 @@
+{% extends 'common/base.html' %}
+
+{% block title %}订单发货：{{ order.id }}{% endblock %}
+
+{% block content %}
+    <form class="m-auto w-50" method="post" action="{{ url_for('.send', order_id=order.id) }}"
+          onsubmit="return confirm('是否确认提交发货信息?')" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div class="form-group row">
+            {{ form.send_name.label(class_='col-sm-3 col-form-label', required=true) }}
+            <div class="col-sm-9">
+                {{ form.send_name(class_="form-control-plaintext border", onchange="format_number(this)") }}
+            </div>
+        </div>
+        <div class="form-group row">
+            {{ form.send_id.label(class_='col-sm-3 col-form-label', required=true) }}
+            <div class="col-sm-9">
+                {{ form.send_id(class_="form-control-plaintext border", onchange="format_number(this)") }}
+            </div>
+        </div>
+        {{ form.submit(class_="btn btn-primary") }}
+    </form>
+{% endblock %}

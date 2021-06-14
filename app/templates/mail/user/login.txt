@@ -1,0 +1,2 @@
+[{{ logo }}] 账号登录，验证码：{{ verification_code }}
+注：{{ ((expire_time or 60 * 1) / 60) | int }}分钟内有效

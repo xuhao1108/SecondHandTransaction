@@ -1,0 +1,31 @@
+{% macro show_catagory_ul(catagory, level=1, c_id=0) %}
+    <ul id="level_{{ level }}" catagory="{{ c_id }}" style="display: {{ 'block' if level == 1 else 'none' }};">
+    {# 获取0层级的孩子，即第一层元素 #}
+        {% for child in catagory[level - 1][c_id]['child'] %}
+            <li catagory="{{ child['item']['id'] }}" style="list-style: none; width: 100px;">
+                <div style="display:inline-block;">
+                    <a href="{{ url_for('goods.search', catagory_id=child['item']['id']) }}">
+                        {{ child['item']['name'] }}
+                    </a>
+                    {{ show_catagory_ul(catagory, level + 1, child['item']['id']) }}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% macro show_catagory_bar(catagory, goods) %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.main') }}">全部</a></li>
+            {% for item in goods.get_parent_list(catagory) %}
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('goods.search', catagory_id=item['id']) }}">{{ item['name'] }}</a>
+                </li>
+            {% endfor %}
+            <li class="breadcrumb-item active w-25 my_over_hidden" aria-current="page">
+                {{ goods.title }}
+            </li>
+        </ol>
+    </nav>
+{% endmacro %}

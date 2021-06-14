@@ -1,0 +1,69 @@
+{% block doc %}
+    <!DOCTYPE html>
+    <html {% block html_attribs %}lang="zh-CN"{% endblock html_attribs %}>
+    {% block html %}
+        <head>
+            {% block head %}
+                <title>{% block title %}{{ title | default }}{% endblock title %}</title>
+
+                {% block metas %}
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+                {% endblock metas %}
+
+                {% block styles %}
+                    <link rel="stylesheet" href="{{ url_for('static', filename='css/extensions/bootstrap.min.css') }}">
+                    <link rel="stylesheet"
+                          href="{{ url_for('static', filename='css/extensions/bootstrap-icons.css') }}">
+                    <link rel="stylesheet" href="{{ url_for('static', filename='css/common/main.css') }}">
+                    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+                {% endblock styles %}
+            {% endblock head %}
+        </head>
+        <body {% block body_attribs %}{% endblock body_attribs %}>
+        {% block body %}
+            {% block navbar %}
+                {% include 'common/header.html' %}
+            {% endblock navbar %}
+            <div {% block container_attribs %}class="container text-center"{% endblock container_attribs %}>
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+                {% block content %}{% endblock content %}
+            </div>
+            {% block footer %}
+                {% include 'common/footer.html' %}
+            {% endblock footer %}
+            {% block scripts %}
+                {# 1：jQuery 和 Bootstrap 集成包（集成了 Popper） #}
+                <script src="{{ url_for('static', filename='js/extensions/jquery.min.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/extensions/bootstrap.bundle.min.js') }}"></script>
+                {# 2：Popper 和 Bootstrap 的 JS 插件各自独立 #}
+                {#                <script src="{{ url_for('static', filename='js/extensions/jquery.min.js') }}"></script>#}
+                {#                <script src="{{ url_for('static', filename='js/extensions/popper.min.js') }}"></script>#}
+                {#                <script src="{{ url_for('static', filename='js/extensions/bootstrap.min.js') }}"></script>#}
+                {# moment #}
+                {# 1. 加载本地 #}
+                {{ moment.include_moment(local_js=url_for('static', filename='js/extensions/moment-with-locales.min.js')) }}
+                {# 2. 在线加载 #}
+                {#                {{ moment.include_moment() }}#}
+                {{ moment.lang("zh-CN") }}
+                {# ------------------------------------------------ #}
+                <script src="{{ url_for('static', filename='js/common/main.js') }}"></script>
+                <script type="text/javascript">
+                    {# 系统常量 #}
+                    let Constant = jQuery.parseJSON({{ constant | tojson | safe  }});
+                    {# 商品类别 #}
+                    let catagory = {{ catagory | tojson | safe  }};
+                </script>
+            {% endblock scripts %}
+        {% endblock body %}
+        </body>
+    {% endblock html %}
+    </html>
+{% endblock doc %}

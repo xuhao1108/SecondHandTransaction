@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>账号注册</title>
+</head>
+<body>
+<p>[{{ logo }}] 账号注册，验证码：{{ verification_code }}</p>
+<p style="color: red">注：{{ ((expire_time or 60 * 5) / 60) | int }}分钟内有效</p>
+</body>
+</html>

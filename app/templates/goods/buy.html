@@ -1,0 +1,44 @@
+{% extends 'common/base.html' %}
+
+{% block title %}购买商品{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="m-auto">
+            <div class="card" style="width: 18rem;">
+                <img src="{{ url_for('static', filename=(goods.pictures | loads_pictures_info)[0]) }}" class="card-img-top" alt="1">
+                <div class="card-body">
+                    <h5 class="card-title my_over_hidden">{{ goods.title }}</h5>
+                    <p class="card-text my_over_hidden">{{ goods.info }}</p>
+                </div>
+            </div>
+            <form class="m-auto w-100" method="post"
+                  action="{{ url_for('.buy', goods_id=goods.id) }}"
+                  enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <p>
+                    价格：{{ goods.sec_price }}（{{ ['原价：', goods.price] | join }}）
+                </p>
+                <p>
+                    邮费：{{ goods.send_price }}（{{ goods.send_type }}）
+                </p>
+                <p>
+                    总计：{{ goods.sec_price + goods.send_price }}
+                </p>
+                <div class="form-group row">
+                    {{ form.address.label(class_='col-sm-3 col-form-label', required=true) }}
+                    <div class="col-sm-9">
+                        {{ form.address(class_="form-control-plaintext border") }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    {{ form.remark.label(class_='col-sm-3 col-form-label') }}
+                    <div class="col-sm-9">
+                        {{ form.remark(class_="form-control-plaintext border") }}
+                    </div>
+                </div>
+                {{ form.submit(class_="btn btn-primary") }}
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'common/base.html' %}
+
+{% block title %}{{ address.address_name }}{% endblock %}
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('.main') }}">收货地址</a></li>
+            {% if item_page != 1 %}
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('.main', page=item_page) }}">第{{ item_page }}页</a>
+                </li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page">{{ address.address_name }}</li>
+        </ol>
+    </nav>
+    <div class="m-auto">
+        <h1>{{ '地址备注：' + address.address_name if address.address_name }}</h1>
+        <p>{{ '地址：' + address.area if address.area }}</p>
+        <p>{{ '详细地址：' + address.info if address.info }}</p>
+        <p>{{ '邮政编码：' + address.zip_code if address.zip_code }}</p>
+        <p>{{ '收货人姓名：' + address.name if address.name }}</p>
+        <p>{{ '收货人手机号：' + address.phone if address.phone }}</p>
+    </div>
+{% endblock %}

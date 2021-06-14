@@ -1,0 +1,162 @@
+{% macro show_goods_info(goods_count, endpoint, get_cancel=1) %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for(endpoint, **kwargs) }}">全部</a></li>
+            {% if request.args.get('status') | int == config.GOODS_PUBLISHED %}
+                <li class="breadcrumb-item active">
+                    <a href="{{ url_for(endpoint, status=config.GOODS_PUBLISHED, **kwargs) }}"
+                       style="color:gray;">出售中</a>
+                </li>
+            {% elif request.args.get('status') | int == config.GOODS_CANCEL and get_cancel %}
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for(endpoint, status=config.GOODS_CANCEL, **kwargs) }}" style="color:gray;">已下架</a>
+                </li>
+            {% elif request.args.get('status') | int == config.GOODS_SOLD %}
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for(endpoint, status=config.GOODS_SOLD, **kwargs) }}" style="color:gray;">已出售</a>
+                </li>
+            {% endif %}
+        </ol>
+    </nav>
+    <div>
+        <p>共{{ goods_count['publishd'] }}个商品正在
+            <a href="{{ url_for(endpoint, status=config.GOODS_PUBLISHED, **kwargs) }}">
+                出售中
+            </a>
+        </p>
+        {% if get_cancel %}
+            <p>共{{ goods_count['cancel'] }}个商品
+                <a href="{{ url_for(endpoint, status=config.GOODS_CANCEL, **kwargs) }}">
+                    已下架
+                </a>
+            </p>
+        {% endif %}
+        <p>共{{ goods_count['sold'] }}个商品
+            <a href="{{ url_for(endpoint, status=config.GOODS_SOLD, **kwargs) }}">
+                已出售
+            </a>
+        </p>
+    </div>
+{% endmacro %}
+
+{% macro show_goods_table(goods_list, current_user, col=3, show_edit=1) %}
+    <table class="table">
+        <tbody>
+        {% for index in range(goods_list | length) %}
+            {% if index % col == 0 %}
+                <tr>
+                    {% for i in range(col) %}
+                        {% if index + i < goods_list | length %}
+                            <td style="width: 250px;"
+                                class="
+                            {% if goods_list[index + i].status == config.GOODS_CANCEL %}table-primary
+                            {% elif goods_list[index + i].status == config.GOODS_SOLD %}table-dark
+                            {% endif %}">
+                                {{ show_goods_item(goods_list[index + i], current_user, show_edit) }}
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro show_goods_item(goods, current_user, show_edit=1) %}
+    {# 轮播图片 #}
+    {{ show_carousel_img(goods) }}
+    <div style="width: 250px; text-align:left;">
+        <p>
+            <s>￥：{{ goods.price }}</s>
+        </p>
+        <p>
+            ￥：{{ goods.sec_price }}
+            <span style="color:red">
+                {{ goods.send_type }}{{ ['（￥', goods.send_price, '）'] | join if goods.send_price }}
+            </span>
+        </p>
+        <p style="overflow: hidden; text-overflow:ellipsis; white-space: nowrap;">
+            <a href="{{ url_for('goods.item', goods_id=goods.id) }}" target="_blank"
+               style="color:black;">{{ goods.title }}</a>
+        </p>
+        <p>
+            <i class="bi bi-person-fill"></i>
+            <a href="{{ url_for('user.item', email=goods.user.email) }}">{{ goods.user.name }}</a>
+        </p>
+    </div>
+    {% if show_edit %}
+        {# 编辑操作 #}
+        <div style="width: 250px;">
+            {% if goods.status == config.GOODS_SOLD %}
+                <a class="btn btn-danger">已出售</a>
+            {% else %}
+                {% if current_user.id == goods.user_id %}
+                    <a class="btn btn-info"
+                       href="{{ url_for('goods.modify', goods_id=goods.id, next=request.url) }}">修改</a>
+                    {% if goods.status == config.GOODS_PUBLISHED %}
+                        <a class="btn btn-danger"
+                           href="{{ url_for('goods.change_status', status=config.GOODS_CANCEL, goods_id=goods.id, next=request.url) }}">下架</a>
+                    {% elif goods.status == config.GOODS_CANCEL %}
+                        <a class="btn btn-danger"
+                           href="{{ url_for('goods.change_status', status=config.GOODS_PUBLISHED, goods_id=goods.id, next=request.url) }}">上架</a>
+                    {% endif %}
+                    <a class="btn btn-danger"
+                       href="{{ url_for('goods.delete', goods_id=goods.id, next=request.url) }}"
+                       onclick="return confirm('是否确定删除?')">删除</a>
+                {% elif goods.status == config.GOODS_CANCEL %}
+                    <a class="btn btn-danger">已下架</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro show_carousel_img(goods) %}
+    <div id="carouselExampleIndicators_{{ goods.id }}" class="carousel slide" data-ride="carousel"
+         style="width: 250px;">
+        <ol class="carousel-indicators">
+            {% for i in goods.pictures | loads_pictures_info %}
+                <li data-target="#carouselExampleIndicators_{{ goods.id }}" data-slide-to="{{ loop.index - 1 }}"
+                    class="{{ 'active' if loop.index == 1 }}"></li>
+            {% endfor %}
+        </ol>
+        <div class="carousel-inner">
+            {% for picture_path in goods.pictures | loads_pictures_info %}
+                <div class="carousel-item {{ 'active' if loop.index == 1 }}">
+                    <a href="{{ url_for('goods.item', goods_id=goods.id) }}" target="_blank"
+                       style="color:black;">
+                        <img src="{{ url_for('static', filename=picture_path) }}"
+                             class="d-block" alt="{{ goods.id }}" style="width: 250px; height: 250px;">
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators_{{ goods.id }}" role="button"
+           data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">上一张</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators_{{ goods.id }}" role="button"
+           data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">下一张</span>
+        </a>
+    </div>
+{% endmacro %}
+
+{% macro show_goods_sort() %}
+    <div id="sort_div">
+        排序：
+        <a id="price">原价</a>
+        <a id="sec_price">二手价</a>
+        <a id="condition">新旧程度</a>
+        <a id="send_type">送货方式</a>
+        <a id="send_price">邮费</a>
+        <a id="status">商品状态</a>
+        <a id="last_modify_time" sort="-1">修改时间</a>
+        <a id="published_time" sort="-1">发布时间</a>
+        <a id="catagory_id">类别</a>
+        <a id="user_id">用户</a>
+    </div>
+{% endmacro %}

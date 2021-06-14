@@ -1,0 +1,54 @@
+{% extends 'common/base.html' %}
+
+{% block title %}订单：{{ order.id }}{% endblock %}
+
+{% block content %}
+    <p>订单：{{ order.id }}</p>
+    <p>下单时间：{{ moment(order.booking_time).fromNow() }}（{{ moment(order.booking_time).format('LLL') }}）</p>
+    <p>付款时间：{{ moment(order.pay_time).fromNow() }}（{{ moment(order.pay_time).format('LLL') }}）</p>
+    <p>总价：{{ order.price }}元</p>
+    <p>订单状态：{{ order.get_status() }}</p>
+    <p>备注：{{ order.remark or '' }}</p>
+    <p>发货方式：{{ order.send_type or '' }}</p>
+    <p>快递单号：{{ order.send_id or '' }}</p>
+    <p>发货时间：
+        {% if order.send_time %}
+            {{ moment(order.send_time).fromNow() }}（{{ moment(order.send_time).format('LLL') }}）
+        {% endif %}
+    </p>
+    <hr>
+    <p>商品：<a href="{{ url_for('goods.item', goods_id=order.goods_id) }}" target="_blank">{{ order.goods.title }}</a></p>
+    <p>买家：<a href="{{ url_for('user.item', email=order.buyer.email) }}" target="_blank">{{ order.buyer.name }}</a></p>
+    <p>卖家：<a href="{{ url_for('user.item', email=order.seller.email) }}" target="_blank">{{ order.seller.name }}</a></p>
+    <hr>
+    <div style="color:red">
+        <p>收货地址：{{ order.address.area }}}; {{ order.address.info }}</p>
+        {% if order.address.zip_code %}
+            <p>邮政编码：{{ order.address.zip_code }}</p>
+        {% endif %}
+        <p>收货人：{{ order.address.name }}</p>
+        <p>联系电话：{{ order.address.phone }}</p>
+    </div>
+    <hr>
+    <div style="color:mediumpurple">
+        {% if order.buyer_message_id %}
+            <h2>买家评论：</h2>
+            {{ show_message(order.buyer_message) }}
+        {% endif %}
+        {% if order.seller_message_id %}
+            <h2>卖家评论：</h2>
+            {{ show_message(order.seller_message) }}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% macro show_message(message) %}
+    <p>{{ message.text }}</p>
+    {% for picture_path in message.pictures | loads_pictures_info %}
+        <img src="{{ url_for('static', filename=picture_path) }}" alt="{{ loop.index }}"
+             onload="if(this.width >= 240){this.width = 240}">
+    {% endfor %}
+    <br>
+    <span>发布于：{{ moment(message.send_time).fromNow() }}（{{ moment(message.send_time).format('LLL') }}）</span>
+    <hr style=" height:2px;border:none;border-top:1px dotted red;"/>
+{% endmacro %}

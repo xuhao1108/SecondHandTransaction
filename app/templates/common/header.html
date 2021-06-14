@@ -1,0 +1,63 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding: 0 198px">
+    <a class="navbar-brand" href="{{ url_for('main.main') }}">{{ logo }}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            {% if current_user.is_authenticated %}
+                <li class="nav-item active">
+                    <div class="dropdown" id="user_dropdown">
+                        <a class="btn" style="color:blue;" href="{{ url_for('user.item',email=current_user.email) }}">
+                            {{ current_user.nickname or '尊敬的用户' }}
+                        </a>
+                        <div class="dropdown-menu" id="user_menu" style="margin-top:0">
+                            {# TODO 查看消息 #}
+                            <a class="dropdown-item" href="#">查看消息</a>
+                            <a class="dropdown-item" href="{{ url_for('user.logout', next=request.url) }}">退出</a>
+                        </div>
+                    </div>
+                </li>
+            {% else %}
+                <li class="nav-item active">
+                    <a class="nav-link text-danger" href="{{ url_for('user.login') }}">亲，请登录</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.register') }}">免费注册</a>
+                </li>
+            {% endif %}
+            <li class="nav-item">
+                {# TODO 客服中心 #}
+                <a class="nav-link" href="#">客服中心</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" action="{{ url_for('goods.search') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input class="form-control mr-sm-2" type="search" name="search" placeholder="搜索商品" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>
+        </form>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item {% if not current_user.is_authenticated %}disabled{% endif %}">
+                <div class="dropdown" id="about_dropdown">
+                    <a class="btn" style="color:blue;" href="{{ url_for('user.profile') }}">个人空间</a>
+                    <div class="dropdown-menu" id="about_menu" style="margin-top:0">
+                        <a class="dropdown-item" href="{{ url_for('order.main') }}">我的订单</a>
+                        <a class="dropdown-item" href="{{ url_for('address.main') }}">我的收货薄</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ url_for('goods.main') }}">卖家中心</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ url_for('admin.index') }}">后台管理系统</a>
+                    </div>
+                </div>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                </div>
+            </li>
+            <li class="nav-item">
+                {# TODO 反馈 #}
+                <a class="nav-link" href="#" tabindex="-1" aria-disabled="true">反馈</a>
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,62 @@
+{% extends 'common/base.html' %}
+{% import 'macro/goods.html' as mg %}
+{% import 'macro/pagination.html' as mp %}
+
+{% block title %}搜索结果{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="m-auto">
+            <form action="{{ url_for('goods.search', **request.args) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="form-group row">
+                    <label for="min_price">原价格</label>
+                    <input type="text" id="min_price" name="min_price" placeholder="最低原价格">
+                    <label for="max_price">~</label>
+                    <input type="text" id="max_price" name="max_price" placeholder="最高原价格">
+                </div>
+                <div class="form-group row">
+                    <label for="min_sec_price">二手价格</label>
+                    <input type="text" id="min_sec_price" name="min_sec_price" placeholder="最低二手价格">
+                    <label for="max_sec_price">~</label>
+                    <input type="text" id="max_sec_price" name="max_sec_price" placeholder="最高二手价格">
+                </div>
+                <div class="form-group row">
+                    <label for="min_condition">新旧程度</label>
+                    <input type="text" id="min_condition" name="min_condition" placeholder="1">
+                    <label for="max_condition">~</label>
+                    <input type="text" id="max_condition" name="max_condition" placeholder="100">
+                </div>
+                <div class="form-group row">
+                    <label for="send_type" class="col-sm-2 col-form-label col-form-label-sm">送货方式</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control form-control-sm" id="send_type" name="send_type"
+                               placeholder="不限/包邮/当面交易">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="min_send_price">送货价格</label>
+                    <input type="text" id="min_send_price" name="min_send_price" placeholder="最低送货价格">
+                    <label for="max_send_price">~</label>
+                    <input type="text" id="max_send_price" name="max_send_price" placeholder="最高送货价格">
+                </div>
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>
+            </form>
+            <hr>
+            {{ mg.show_goods_sort() }}
+            <hr>
+            {% if pagination.items %}
+                {{ mg.show_goods_table(pagination.items, current_user, col=5, show_edit=0) }}
+                <h3>共查询到{{ pagination.total }}条结果</h3>
+                {{ mp.show_pagination(pagination,'.search', **(request.args.to_dict() | pop_keys('page'))) }}
+            {% else %}
+                <h1>搜索不到您想要的内容，请重新试试。</h1>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/goods/main.js') }}"></script>
+{% endblock %}

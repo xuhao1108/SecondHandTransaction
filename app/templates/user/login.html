@@ -1,0 +1,67 @@
+{% extends 'common/base.html' %}
+
+{% block title %}登录{% endblock %}
+
+{% block content %}
+    <form action="{{ url_for('.login', next=request.args.next) }}" method="post" class="form-signup h-100">
+        <img class="mb-4" src="{{ url_for('static',filename='img/logo.jpg') }}" width="72" height="72" alt="忙鱼">
+        <h1 class="h3 mb-3 font-weight-normal">请登录</h1>
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <a class="btn btn-lg btn-primary active disabled" id="by_password" role="button" aria-pressed="true"
+               onclick="login_tpye('password')">
+                密码登录
+            </a>
+            <a class="btn btn-lg btn-secondary" id="by_verfication_code" role="button" aria-pressed="true"
+               onclick="login_tpye('verification_code')">
+                验证码登录
+            </a>
+        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input type="hidden" name="type" value="{{ config.USER_PASSWORD_LOGIN }}"/>
+        <div class="form-group row">
+            <label for="email" class="col-sm-2 col-form-label">邮件</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" name="email" id="email" required="required"
+                       placeholder="email@example.com" {% if email %} value="{{ email }}" {% endif %}
+                       onchange="check_email(this.value)">
+            </div>
+        </div>
+        <div class="form-group row" id="by_password_div">
+            <label for="password" class="col-sm-2 col-form-label">密码</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="password" name="password" required="required"
+                       maxlength="16" placeholder="密码" onchange="check_password(this.value,this.value)">
+                <a type="button" class="btn btn-outline-info float-right" href="{{ url_for('.ignore') }}">
+                    找回密码
+                </a>
+            </div>
+        </div>
+        <div class="form-group row" id="by_verification_code_div" hidden>
+            <label for="verification_code" class="col-sm-2 col-form-label">验证码</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="verification_code" name="verification_code"
+                       maxlength="6" placeholder="邮件验证码">
+                <a class="btn btn-link float-left" role="button"
+                   onclick="send_verification_code('{{ url_for('.send_verification_code') }}')"
+                   id="get_verification_code">获取验证码</a>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="remember" checked="checked">
+                <label class="form-check-label" for="remember">
+                    记住我
+                </label>
+            </div>
+        </div>
+        <div class="alert alert-warning" role="alert" style="display: none;" id="alert_div"></div>
+        <button type="submit" class="btn btn-primary" onclick="check_email($('#email').val())">登录</button>
+    </form>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/user/main.js') }}"></script>
+{% endblock %}

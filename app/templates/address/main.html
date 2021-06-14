@@ -1,0 +1,61 @@
+{% extends 'common/base.html' %}
+{% import 'macro/pagination.html' as pg %}
+
+{% block title %}收货地址{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <ul class="nav flex-column">
+            {#            <li class="nav-item">#}
+            {#                <a class="nav-link" href="{{ url_for('user.profile') }}">个人资料</a>#}
+            {#            </li>#}
+            <li class="nav-item">
+                <a class="nav-link active" style="color:darkgray;" href="{{ url_for('.main') }}">收货地址</a>
+            </li>
+            {#            <li class="nav-item">#}
+            {#                <a class="nav-link" href="#"#}
+            {#                   onclick="reset_password('{{ url_for('user.send_verification_code') }}', '{{ current_user.email }}','{{ csrf_token() }}')">修改密码</a>#}
+            {#            </li>#}
+        </ul>
+        <div class="m-auto">
+            <a type="button" class="btn btn-primary btn-lg btn-block" href="{{ url_for('.modify', address_id=0) }}">
+                添加地址
+            </a>
+            <p>共{{ pagination.total }}个收货地址</p>
+            {% if pagination.items %}
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">地址信息</th>
+                        <th scope="col">详细地址</th>
+                        <th scope="col">收货人姓名</th>
+                        <th scope="col">手机号码</th>
+                        <th scope="col">备注</th>
+                        <th scope="col">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for address in pagination.items %}
+                        <tr onclick="window.location.href='{{ url_for('.item', address_id=address.id, item_page=request.args.get('page')) }}'">
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ address.area }}</td>
+                            <td>{{ address.info }}</td>
+                            <td>{{ address.name }}</td>
+                            <td>{{ address.phone }}</td>
+                            <td>{{ address.address_name }}</td>
+                            <td>
+                                <a class="btn btn-info"
+                                   href="{{ url_for('.modify', address_id=address.id, next=request.url) }}">修改</a>
+                                <a class="btn btn-danger"
+                                   href="{{ url_for('.delete', address_id=address.id, next=request.url) }}">删除</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {{ pg.show_pagination(pagination,'.main', **(request.args.to_dict() | pop_keys('page'))) }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
